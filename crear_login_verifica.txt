@@ -1,0 +1,93 @@
+# CREAR PROYECTO
+composer create-project laravel/laravel:^9.0 login
+cd login
+
+
+# login de laravel
+composer require laravel/ui
+php artisan ui bootstrap --auth
+npm install && npm run dev
+
+4. Configurar la verificación de correo electrónico
+Para activar la verificación de email, debes:
+
+Asegurarte de que tu modelo User implementa la interfaz MustVerifyEmail:
+
+php// app/Models/User.php
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    // ...
+}
+
+Configurar tu entorno de correo en el archivo .env:
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io  # u otro servicio de email
+MAIL_PORT=2525
+MAIL_USERNAME=tu_username
+MAIL_PASSWORD=tu_password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS="no-reply@tuapp.com"
+MAIL_FROM_NAME="${APP_NAME}"
+
+Activar la verificación en las rutas (que ya hiciste al usar ['verify' => true]).
+Auth::routes(['verify' => true]);
+
+5. Personalizar la redirección después del login
+Para cambiar a dónde se redirige al usuario después de iniciar sesión:
+php// app/Providers/RouteServiceProvider.php
+public const HOME = '/dashboard';
+6. Crear el controlador del Dashboard
+bashphp artisan make:controller DashboardController
+Luego edita el archivo para que quede así:
+php<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class DashboardController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware(['auth', 'verified']);
+    }
+
+    public function index()
+    {
+        return view('dashboard');
+    }
+}
+7. Crear la vista del Dashboard
+Crea un archivo resources/views/dashboard.blade.php:
+blade@extends('layouts.app')
+
+@section('content')
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">{{ __('Dashboard') }}</div>
+
+                <div class="card-body">
+                    @if (session('status'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <h2>¡Bienvenido, {{ Auth::user()->name }}!</h2>
+                    <p>Has iniciado sesión correctamente.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+8. Ejecutar las migraciones
+Para crear las tablas de usuarios y autenticación:
+php artisan migrate
+php artisan serve

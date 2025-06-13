@@ -1,0 +1,126 @@
+# CREAR PROYECTO
+composer create-project laravel/laravel:^9.0 nombre-del-proyecto
+cd nombre-del-proyecto
+php artisan serve
+
+# login de laravel
+composer require laravel/ui
+php artisan ui bootstrap --auth
+npm install && npm run dev
+
+# Para activar la verificación de email, debes:
+
+// app/Models/User.php
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+class User extends Authenticatable implements MustVerifyEmail
+{
+    // ...
+}
+
+
+
+
+
+# MODELOS
+# Crear un modelo
+php artisan make:model Nombre
+
+# Crear un modelo con migración
+php artisan make:model Nombre -m
+
+# Crear modelo con migración, controlador, factory y seeder
+php artisan make:model Nombre -mfsc
+
+# MIGRACIONES
+# Crear una migración
+php artisan make:migration crear_tabla_nombre
+
+# Ejecutar migraciones
+php artisan migrate
+
+# Revertir la última migración
+php artisan migrate:rollback
+
+# Revertir todas las migraciones
+php artisan migrate:reset
+
+# Revertir y volver a ejecutar todas las migraciones
+php artisan migrate:refresh
+
+# CONTROLADORES
+# Crear un controlador
+php artisan make:controller NombreController
+
+# Crear un controlador con recursos CRUD
+php artisan make:controller NombreController --resource
+
+# Crear un controlador con modelo asignado
+php artisan make:controller NombreController --resource --model=Nombre
+
+# RUTAS
+# Listar todas las rutas
+php artisan route:list
+
+# SEEDERS Y FACTORIES
+# Crear un seeder
+php artisan make:seeder NombreSeeder
+
+# Crear una factory
+php artisan make:factory NombreFactory
+
+# Ejecutar seeders
+php artisan db:seed
+
+# Ejecutar un seeder específico
+php artisan db:seed --class=NombreSeeder
+
+# OTROS COMANDOS ÚTILES
+# Crear un middleware
+php artisan make:middleware NombreMiddleware
+
+# Crear una petición de validación
+php artisan make:request NombreRequest
+
+# Crear un recurso API
+php artisan make:resource NombreResource
+
+# Crear una prueba
+php artisan make:test NombrePrueba
+
+# Limpiar caché
+php artisan cache:clear
+
+# Limpiar caché de rutas
+php artisan route:clear
+
+# Limpiar caché de configuración
+php artisan config:clear
+
+# Limpiar caché de vistas
+php artisan view:clear
+
+# Generar clave de aplicación
+php artisan key:generate
+
+# Ver lista de comandos disponibles
+php artisan list
+
+# Crear un componente de Livewire
+php artisan make:livewire NombreComponente
+
+# Crear una directiva de Blade
+php artisan make:directive NombreDirectiva
+
+# Crear un evento
+php artisan make:event NombreEvento
+
+# Crear un listener
+php artisan make:listener NombreListener
+
+LIMPIAR cache
+php artisan view:clear
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan optimize:clear
