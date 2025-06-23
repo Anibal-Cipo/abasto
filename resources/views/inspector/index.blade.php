@@ -1,119 +1,196 @@
-@extends('layouts.app')
+@extends('layouts.inspector')
 
-@section('title', 'Inspector - Dashboard')
+@section('title', 'Dashboard')
 
 @section('header')
-<h1 class="h2"><i class="bi bi-search"></i> Inspector - Dashboard</h1>
-<div class="btn-toolbar mb-2 mb-md-0">
-    <div class="btn-group me-2">
-        <a href="{{ route('inspector.buscar') }}" class="btn btn-primary">
-            <i class="bi bi-search"></i> Buscar Introductor
-        </a>
-        <a href="{{ route('inspector.qr.scanner') }}" class="btn btn-info">
-            <i class="bi bi-qr-code-scan"></i> Escanear QR
-        </a>
+    <div class="text-center">
+        <h2 class="h4 mb-1">Dashboard del Inspector</h2>
+        <p class="text-muted mb-0">Estadísticas del sistema en tiempo real</p>
     </div>
-</div>
 @endsection
 
+@push('styles')
+    <style>
+        /* Estilos específicos para móvil */
+        @media (max-width: 768px) {
+            .btn-mobile {
+                padding: 1rem;
+                margin-bottom: 1rem;
+                font-size: 1.1rem;
+                border-radius: 10px;
+            }
+
+            .stats-card-mobile {
+                padding: 1rem;
+                margin-bottom: 0.5rem;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .icon-large {
+                font-size: 2.5rem !important;
+            }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
-<!-- Estadísticas para inspector -->
-<div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-truck display-4"></i>
-                <h3 class="card-title mt-2">{{ $stats['introducciones_hoy'] }}</h3>
-                <p class="card-text">Introducciones Hoy</p>
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4">
+        <div class="col-4">
+            <div class="card-inspector stats-card-inspector stats-today">
+                <i class="bi bi-truck" style="font-size: 2rem;"></i>
+                <h3 class="mb-0 mt-2">{{ $stats['introducciones_hoy'] }}</h3>
+                <small>Hoy</small>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card-inspector stats-card-inspector stats-stock">
+                <i class="bi bi-boxes" style="font-size: 2rem;"></i>
+                <h3 class="mb-0 mt-2">{{ $stats['introducciones_con_stock'] }}</h3>
+                <small>Con Stock</small>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="card-inspector stats-card-inspector stats-active">
+                <i class="bi bi-people" style="font-size: 2rem;"></i>
+                <h3 class="mb-0 mt-2">{{ $stats['introductores_activos'] }}</h3>
+                <small>Activos</small>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-boxes display-4"></i>
-                <h3 class="card-title mt-2">{{ $stats['introducciones_con_stock'] }}</h3>
-                <p class="card-text">Con Stock Disponible</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card stats-card">
-            <div class="card-body text-center">
-                <i class="bi bi-people display-4"></i>
-                <h3 class="card-title mt-2">{{ $stats['introductores_activos'] }}</h3>
-                <p class="card-text">Introductores Activos</p>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Herramientas de inspector -->
-<div class="row">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-search display-1 text-primary mb-3"></i>
-                <h4 class="card-title">Buscar Introductor</h4>
-                <p class="card-text text-muted">
-                    Busca un introductor por razón social o CUIT para ver sus últimas 5 introducciones y estado de stock.
-                </p>
-                <a href="{{ route('inspector.buscar') }}" class="btn btn-primary btn-lg">
-                    <i class="bi bi-search"></i> Iniciar Búsqueda
-                </a>
+    <!-- Botones principales optimizados para móvil -->
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card-inspector">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-search text-success mb-3" style="font-size: 3rem;"></i>
+                    <h4 class="card-title mb-3">Buscar Introductor</h4>
+                    <p class="text-muted mb-4">
+                        Busca por CUIT o razón social para ver las últimas introducciones y stock disponible.
+                    </p>
+                    <a href="{{ route('inspector.buscar') }}" class="btn btn-inspector-primary w-100">
+                        <i class="bi bi-search me-2"></i>
+                        Iniciar Búsqueda
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <i class="bi bi-qr-code-scan display-1 text-info mb-3"></i>
-                <h4 class="card-title">Escanear Código QR</h4>
-                <p class="card-text text-muted">
-                    Escanea el código QR de una introducción para ver todos los detalles y stock disponible al instante.
-                </p>
-                <a href="{{ route('inspector.qr.scanner') }}" class="btn btn-info btn-lg">
-                    <i class="bi bi-qr-code-scan"></i> Abrir Scanner
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Instrucciones -->
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-info-circle"></i> Instrucciones de Uso
-                </h5>
+    <div class="row g-3 mt-2">
+        <div class="col-12">
+            <div class="card-inspector">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-qr-code-scan text-info mb-3" style="font-size: 3rem;"></i>
+                    <h4 class="card-title mb-3">Escanear Código QR</h4>
+                    <p class="text-muted mb-4">
+                        Escanea el QR de una introducción para obtener información instantánea del stock.
+                    </p>
+                    <a href="{{ route('inspector.qr.scanner') }}" class="btn btn-inspector-info w-100">
+                        <i class="bi bi-qr-code-scan me-2"></i>
+                        Abrir Scanner
+                    </a>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <h6><i class="bi bi-1-circle text-primary"></i> Búsqueda por Introductor</h6>
-                        <ul class="list-unstyled ms-3">
-                            <li><i class="bi bi-check-circle text-success"></i> Ingresa el CUIT o razón social</li>
-                            <li><i class="bi bi-check-circle text-success"></i> Ve las últimas 5 introducciones</li>
-                            <li><i class="bi bi-check-circle text-success"></i> Verifica stock disponible</li>
-                            <li><i class="bi bi-check-circle text-success"></i> Accede a detalles completos</li>
-                        </ul>
-                    </div>
-                    
-                    <div class="col-md-6">
-                        <h6><i class="bi bi-2-circle text-info"></i> Escaneo QR</h6>
-                        <ul class="list-unstyled ms-3">
-                            <li><i class="bi bi-check-circle text-success"></i> Apunta la cámara al código QR</li>
-                            <li><i class="bi bi-check-circle text-success"></i> Obtén información instantánea</li>
-                            <li><i class="bi bi-check-circle text-success"></i> Ve productos y cantidades</li>
-                            <li><i class="bi bi-check-circle text-success"></i> Controla redespachos realizados</li>
-                        </ul>
+        </div>
+    </div>
+
+    <!-- Instrucciones rápidas -->
+    <div class="row g-3 mt-3">
+        <div class="col-12">
+            <div class="card-inspector">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0 text-center">
+                        <i class="bi bi-lightbulb text-warning"></i>
+                        Guía Rápida
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <i class="bi bi-search text-success mb-2" style="font-size: 2rem;"></i>
+                            <h6>Búsqueda</h6>
+                            <ul class="list-unstyled small text-muted">
+                                <li>✓ CUIT completo o parcial</li>
+                                <li>✓ Nombre del frigorífico</li>
+                                <li>✓ Últimas 5 introducciones</li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <i class="bi bi-qr-code-scan text-info mb-2" style="font-size: 2rem;"></i>
+                            <h6>Scanner QR</h6>
+                            <ul class="list-unstyled small text-muted">
+                                <li>✓ Información instantánea</li>
+                                <li>✓ Stock disponible</li>
+                                <li>✓ Detalles completos</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Información del sistema -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="card-inspector">
+                <div class="card-body py-2">
+                    <div class="row align-items-center text-center">
+                        <div class="col">
+                            <small class="text-muted">
+                                <i class="bi bi-clock"></i>
+                                Actualizado: {{ now()->format('H:i:s') }}
+                            </small>
+                        </div>
+                        <div class="col-auto">
+                            <span class="badge bg-success">
+                                <i class="bi bi-wifi"></i> Online
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
+
+@push('scripts')
+    <script>
+        // Auto-refresh cada 5 minutos
+        setTimeout(function() {
+            location.reload();
+        }, 300000);
+
+        // Detectar si está offline
+        window.addEventListener('offline', function() {
+            document.querySelector('.badge.bg-success').className = 'badge bg-danger';
+            document.querySelector('.badge.bg-danger').textContent = 'Offline';
+        });
+
+        window.addEventListener('online', function() {
+            document.querySelector('.badge.bg-danger').className = 'badge bg-success';
+            document.querySelector('.badge.bg-success').textContent = 'Online';
+        });
+    </script>
+@endpush

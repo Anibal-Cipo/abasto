@@ -1,45 +1,49 @@
-@extends('layouts.app')
+@extends('layouts.inspector')
 
 @section('title', 'Scanner QR')
 
 @section('breadcrumb')
-<li class="breadcrumb-item"><a href="{{ route('inspector.index') }}">Inspector</a></li>
+<li class="breadcrumb-item"><a href="{{ route('inspector.index') }}">Inicio</a></li>
 <li class="breadcrumb-item active">Scanner QR</li>
 @endsection
 
 @section('header')
-<h1 class="h2"><i class="bi bi-qr-code-scan"></i> Scanner de Código QR</h1>
+<div class="text-center">
+    <h2 class="h4 mb-1">
+        <i class="bi bi-qr-code-scan text-info"></i> 
+        Scanner de Código QR
+    </h2>
+    <p class="text-muted mb-0">Apunta la cámara hacia el código QR</p>
+</div>
 @endsection
 
 @section('content')
 <div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
+    <div class="col-12 col-lg-6 mb-4">
+        <div class="card-inspector">
+            <div class="card-header bg-info text-white text-center">
+                <h6 class="mb-0">
                     <i class="bi bi-camera"></i> Cámara
-                </h5>
+                </h6>
             </div>
-            <div class="card-body">
-                <div id="reader" style="width: 100%;"></div>
-                <div id="camera-status" class="mt-3">
-                    <div class="text-center">
-                        <div class="spinner-border text-primary" role="status">
-                            <span class="visually-hidden">Cargando cámara...</span>
-                        </div>
-                        <p class="mt-2 text-muted">Iniciando cámara...</p>
+            <div class="card-body p-2">
+                <div id="reader" style="width: 100%; border-radius: 10px; overflow: hidden;"></div>
+                <div id="camera-status" class="mt-3 text-center">
+                    <div class="spinner-border text-info" role="status">
+                        <span class="visually-hidden">Cargando cámara...</span>
                     </div>
+                    <p class="mt-2 text-muted small">Iniciando cámara...</p>
                 </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
+    <div class="col-12 col-lg-6">
+        <div class="card-inspector">
+            <div class="card-header bg-success text-white text-center">
+                <h6 class="mb-0">
                     <i class="bi bi-info-circle"></i> Resultado
-                </h5>
+                </h6>
             </div>
             <div class="card-body">
                 <div id="scan-result" class="text-center py-4">
@@ -49,7 +53,7 @@
                 </div>
                 
                 <div id="loading-result" style="display: none;" class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
+                    <div class="spinner-border text-success" role="status">
                         <span class="visually-hidden">Buscando...</span>
                     </div>
                     <p class="mt-2 text-muted">Buscando información...</p>
@@ -61,28 +65,48 @@
                     <i class="bi bi-exclamation-triangle display-1 text-danger"></i>
                     <h5 class="text-danger mt-3">Error</h5>
                     <p class="text-muted" id="error-message"></p>
-                    <button type="button" class="btn btn-primary" onclick="resetScanner()">
+                    <button type="button" class="btn btn-inspector-primary" onclick="resetScanner()">
                         <i class="bi bi-arrow-clockwise"></i> Intentar de nuevo
                     </button>
                 </div>
             </div>
         </div>
         
-        <!-- Instrucciones -->
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="card-title mb-0">
-                    <i class="bi bi-lightbulb"></i> Instrucciones
-                </h5>
+        <!-- Instrucciones optimizadas para móvil -->
+        <div class="card-inspector mt-3">
+            <div class="card-header bg-light text-center">
+                <h6 class="mb-0">
+                    <i class="bi bi-lightbulb text-warning"></i> Instrucciones
+                </h6>
             </div>
             <div class="card-body">
-                <ul class="list-unstyled">
-                    <li><i class="bi bi-check-circle text-success"></i> Asegúrate de tener buena iluminación</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Mantén el código QR centrado</li>
-                    <li><i class="bi bi-check-circle text-success"></i> Espera a que la cámara enfoque</li>
-                    <li><i class="bi bi-check-circle text-success"></i> El escaneo es automático</li>
-                </ul>
+                <div class="row text-center">
+                    <div class="col-6 mb-2">
+                        <i class="bi bi-brightness-high text-warning mb-1" style="font-size: 1.5rem;"></i>
+                        <p class="small mb-0">Buena iluminación</p>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <i class="bi bi-bullseye text-info mb-1" style="font-size: 1.5rem;"></i>
+                        <p class="small mb-0">QR centrado</p>
+                    </div>
+                    <div class="col-6">
+                        <i class="bi bi-camera text-success mb-1" style="font-size: 1.5rem;"></i>
+                        <p class="small mb-0">Esperar enfoque</p>
+                    </div>
+                    <div class="col-6">
+                        <i class="bi bi-magic text-primary mb-1" style="font-size: 1.5rem;"></i>
+                        <p class="small mb-0">Escaneo automático</p>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <!-- Botón volver -->
+        <div class="d-grid mt-3">
+            <a href="{{ route('inspector.index') }}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>
+                Volver al Inicio
+            </a>
         </div>
     </div>
 </div>
@@ -161,25 +185,37 @@ function showResult(data) {
     
     let html = `
         <div class="border rounded p-3 bg-light">
-            <h6><i class="bi bi-truck"></i> Remito ${introduccion.numero_remito}</h6>
-            <p class="mb-2">
-                <strong>${introduccion.introductor.razon_social}</strong><br>
-                <small class="text-muted">${introduccion.introductor.cuit_formateado}</small>
-            </p>
-            <p class="mb-2">
-                <i class="bi bi-calendar"></i> ${new Date(introduccion.fecha).toLocaleDateString('es-AR')} 
-                ${introduccion.hora}
-            </p>
+            <h6 class="text-center mb-3">
+                <i class="bi bi-truck text-success"></i> 
+                Remito ${introduccion.numero_remito}
+            </h6>
+            <div class="row mb-2">
+                <div class="col-12">
+                    <strong class="text-success">${introduccion.introductor.razon_social}</strong><br>
+                    <small class="text-muted">${introduccion.introductor.cuit_formateado}</small>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-6">
+                    <small><i class="bi bi-calendar"></i> ${new Date(introduccion.fecha).toLocaleDateString('es-AR')}</small>
+                </div>
+                <div class="col-6 text-end">
+                    <small><i class="bi bi-clock"></i> ${introduccion.hora}</small>
+                </div>
+            </div>
         </div>
         
         <div class="mt-3">
-            <h6><i class="bi bi-box"></i> Stock Disponible</h6>
+            <h6 class="text-center mb-3">
+                <i class="bi bi-box text-info"></i> 
+                Stock Disponible
+            </h6>
             <div class="table-responsive">
-                <table class="table table-sm">
-                    <thead>
+                <table class="table table-sm table-striped">
+                    <thead class="table-light">
                         <tr>
-                            <th>Producto</th>
-                            <th class="text-center">Disponible</th>
+                            <th class="small">Producto</th>
+                            <th class="text-center small">Disponible</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -194,7 +230,7 @@ function showResult(data) {
             <tr>
                 <td><small>${item.producto.nombre}</small></td>
                 <td class="text-center">
-                    <span class="badge ${badgeClass}">${stockText}</span>
+                    <span class="badge ${badgeClass} small">${stockText}</span>
                 </td>
             </tr>
         `;
@@ -207,10 +243,10 @@ function showResult(data) {
         </div>
         
         <div class="mt-3 d-grid gap-2">
-            <a href="/introducciones/${introduccion.id}" class="btn btn-primary">
+            <a href="/introducciones/${introduccion.id}" class="btn btn-inspector-primary">
                 <i class="bi bi-eye"></i> Ver Detalle Completo
             </a>
-            <button type="button" class="btn btn-outline-primary" onclick="resetScanner()">
+            <button type="button" class="btn btn-outline-secondary" onclick="resetScanner()">
                 <i class="bi bi-arrow-clockwise"></i> Escanear Otro QR
             </button>
         </div>
