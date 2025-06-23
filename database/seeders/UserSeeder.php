@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -9,36 +10,72 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        // Usuario administrador
-        User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@cipolletti.gob.ar',
-            'role' => 'admin',
-            'password' => Hash::make('admin123'),
-            'email_verified_at' => now(),
-            'activo' => true,
-        ]);
+        $this->command->info('🔄 Creando usuarios del sistema...');
+
+        // Usuario administrador principal
+        User::updateOrCreate(
+            ['email' => 'admin@cipolletti.gob.ar'],
+            [
+                'name' => 'Administrador Principal',
+                'role' => 'admin',
+                'password' => Hash::make('admin123'),
+                'email_verified_at' => now(),
+                'activo' => true,
+            ]
+        );
+        $this->command->info('✅ Administrador creado: admin@cipolletti.gob.ar');
 
         // Usuario administrativo
-        User::create([
-            'name' => 'Usuario Administrativo',
-            'email' => 'administrativo@cipolletti.gob.ar',
-            'role' => 'administrativo',
-            'password' => Hash::make('admin123'),
-            'email_verified_at' => now(),
-            'activo' => true,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'administrativo@cipolletti.gob.ar'],
+            [
+                'name' => 'Usuario Administrativo',
+                'role' => 'administrativo',
+                'password' => Hash::make('admin123'),
+                'email_verified_at' => now(),
+                'activo' => true,
+            ]
+        );
+        $this->command->info('✅ Administrativo creado: administrativo@cipolletti.gob.ar');
 
-        // Usuario inspector
-        User::create([
-            'name' => 'Inspector Municipal',
-            'email' => 'inspector@cipolletti.gob.ar',
-            'role' => 'inspector',
-            'password' => Hash::make('admin123'),
-            'email_verified_at' => now(),
-            'activo' => true,
-        ]);
+        // Inspectores de prueba
+        $inspectores = [
+            [
+                'name' => 'Inspector Municipal 1',
+                'email' => 'inspector1@cipolletti.gob.ar',
+            ],
+            [
+                'name' => 'Inspector Municipal 2',
+                'email' => 'inspector2@cipolletti.gob.ar',
+            ],
+            [
+                'name' => 'Inspector Municipal 3',
+                'email' => 'inspector3@cipolletti.gob.ar',
+            ]
+        ];
 
-        $this->command->info('✅ Se crearon 3 usuarios de prueba');
+        foreach ($inspectores as $inspector) {
+            User::updateOrCreate(
+                ['email' => $inspector['email']],
+                [
+                    'name' => $inspector['name'],
+                    'role' => 'inspector',
+                    'password' => Hash::make('inspector123'),
+                    'email_verified_at' => now(),
+                    'activo' => true,
+                ]
+            );
+            $this->command->info("✅ Inspector creado: {$inspector['email']}");
+        }
+
+        $this->command->info('');
+        $this->command->info('📋 CREDENCIALES DE ACCESO:');
+        $this->command->info('====================================');
+        $this->command->info('👑 ADMIN: admin@cipolletti.gob.ar / admin123');
+        $this->command->info('📊 ADMINISTRATIVO: administrativo@cipolletti.gob.ar / admin123');
+        $this->command->info('🔍 INSPECTORES: inspector1@cipolletti.gob.ar / inspector123');
+        $this->command->info('🔍 INSPECTORES: inspector2@cipolletti.gob.ar / inspector123');
+        $this->command->info('🔍 INSPECTORES: inspector3@cipolletti.gob.ar / inspector123');
+        $this->command->info('====================================');
     }
 }
