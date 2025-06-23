@@ -35,8 +35,23 @@ Route::get('/home', function () {
 // Rutas protegidas por autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Dashboard principal (redirige según rol)
+    // Dashboard principal (accesible por todos los roles)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // API Routes accesibles por todos los roles autenticados
+    Route::prefix('api')->group(function () {
+        // Búsqueda de introductores
+        Route::get('/introductores/buscar', [IntroductorController::class, 'buscarApi'])
+            ->name('introductores.buscar.api');
+
+        // Búsqueda por QR
+        Route::get('/introducciones/qr/{qrCode}', [IntroduccionController::class, 'buscarPorQr'])
+            ->name('introducciones.qr');
+
+        // Stats para dashboard
+        Route::get('/dashboard/stats', [DashboardController::class, 'statsApi'])
+            ->name('dashboard.stats.api');
+    });
 
     // Rutas para inspectores únicamente
     Route::middleware(['role:inspector'])->prefix('inspector')->name('inspector.')->group(function () {
@@ -44,23 +59,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/buscar', [InspectorController::class, 'buscar'])->name('buscar');
         Route::post('/buscar', [InspectorController::class, 'buscarResultados'])->name('buscar.resultados');
         Route::get('/qr-scanner', [InspectorController::class, 'qrScanner'])->name('qr.scanner');
-
+        
         // Vistas específicas para inspector (móvil-optimizadas)
         Route::get('/introduccion/{id}', [InspectorController::class, 'mostrarIntroduccion'])->name('introduccion.show');
         Route::get('/redespacho/{id}', [InspectorController::class, 'mostrarRedespacho'])->name('redespacho.show');
     });
 
-    // Rutas de solo lectura para inspectores (pueden VER pero no editar)
+    // Rutas de solo lectura - Accesibles por todos los roles (incluyendo inspectores)
     Route::middleware(['role:admin,administrativo,inspector'])->group(function () {
         // Introductores - solo lectura para inspectores
         Route::get('/introductores/{introductor}', [IntroductorController::class, 'show'])->name('introductores.show');
-
+        
         // Introducciones - solo lectura para inspectores  
         Route::get('/introducciones/{introduccion}', [IntroduccionController::class, 'show'])->name('introducciones.show');
-
+        
         // Redespachos - solo lectura para inspectores
         Route::get('/redespachos/{redespacho}', [RedespachoController::class, 'show'])->name('redespachos.show');
-
+        
         // Rutas de impresión y descarga (solo lectura)
         Route::get('/introducciones/{id}/imprimir', [IntroduccionController::class, 'imprimirRemito'])
             ->name('introducciones.imprimir');
@@ -70,26 +85,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('redespachos.imprimir');
         Route::get('/redespachos/{id}/descargar', [RedespachoController::class, 'descargarRedespacho'])
             ->name('redespachos.descargar');
-
-        // API Routes accesibles por todos los roles autenticados
-        Route::prefix('api')->group(function () {
-            // Búsqueda de introductores
-            Route::get('/introductores/buscar', [IntroductorController::class, 'buscarApi'])
-                ->name('introductores.buscar.api');
-
-            // Búsqueda por QR
-            Route::get('/introducciones/qr/{qrCode}', [IntroduccionController::class, 'buscarPorQr'])
-                ->name('introducciones.qr');
-
-            // Stats para dashboard
-            Route::get('/dashboard/stats', [DashboardController::class, 'statsApi'])
-                ->name('dashboard.stats.api');
-        });
     });
 
     // Rutas para admin y administrativos (CRUD completo)
     Route::middleware(['role:admin,administrativo'])->group(function () {
-
+        
         // Introductores - CRUD completo
         Route::get('/introductores', [IntroductorController::class, 'index'])->name('introductores.index');
         Route::get('/introductores/create', [IntroductorController::class, 'create'])->name('introductores.create');
@@ -106,25 +106,27 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::put('/introducciones/{introduccion}', [IntroduccionController::class, 'update'])->name('introducciones.update');
         Route::delete('/introducciones/{introduccion}', [IntroduccionController::class, 'destroy'])->name('introducciones.destroy');
 
-        // Redespachos - CRUD completo (menos show que está arriba)
+        // Redespachos - CRUD completo
         Route::get('/redespachos', [RedespachoController::class, 'index'])->name('redespachos.index');
         Route::delete('/redespachos/{redespacho}', [RedespachoController::class, 'destroy'])->name('redespachos.destroy');
-
+        
         // Crear redespacho desde una introducción específica
         Route::get('/introducciones/{introduccion}/redespachos/create', [RedespachoController::class, 'create'])
             ->name('redespachos.create');
         Route::post('/introducciones/{introduccion}/redespachos', [RedespachoController::class, 'store'])
             ->name('redespachos.store');
 
-        // Productos
+        // Productos - CRUD completo
         Route::resource('productos', ProductoController::class);
 
         // Reportes
         Route::prefix('reportes')->name('reportes.')->group(function () {
             Route::get('/', [ReporteController::class, 'index'])->name('index');
-            Route::get('/introducciones', [ReporteController::class, 'introducciones'])->name('introducciones');
-            Route::get('/redespachos', [ReporteController::class, 'redespachos'])->name('redespachos');
+            Route::get('/dashboard', [ReporteController::class, 'dashboard'])->name('dashboard');
+            Route::get('/dashboard-data', [ReporteController::class, 'dashboardData'])->name('dashboard.data');
             Route::get('/stock', [ReporteController::class, 'stock'])->name('stock');
+            Route::get('/consumo-ciudad', [ReporteController::class, 'consumoCiudad'])->name('consumo-ciudad');
+            Route::get('/introducciones/export', [ReporteController::class, 'exportarIntroducciones'])->name('introducciones.export');
         });
     });
 
@@ -133,3 +135,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('usuarios', UserController::class);
     });
 });
+
