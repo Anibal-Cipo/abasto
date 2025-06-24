@@ -1,9 +1,19 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
 class ActaTipo extends Model
 {
     use HasFactory;
 
     protected $connection = 'infracciones';
     protected $table = 'acta_tipo';
+
+    // Desactivar timestamps ya que la tabla no los tiene según tu SQL
+    public $timestamps = false;
 
     protected $fillable = [
         'id_tipo',
