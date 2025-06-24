@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\InspectorController;
+use App\Http\Controllers\ActaController; // NUEVA LÍNEA AGREGADA
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,7 +39,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard principal (accesible por todos los roles)
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-
     // API Routes accesibles por todos los roles autenticados
     Route::prefix('api')->group(function () {
         // Búsqueda de introductores
@@ -64,6 +64,39 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Vistas específicas para inspector (móvil-optimizadas)
         Route::get('/introduccion/{id}', [InspectorController::class, 'mostrarIntroduccion'])->name('introduccion.show');
         Route::get('/redespacho/{id}', [InspectorController::class, 'mostrarRedespacho'])->name('redespacho.show');
+    });
+
+    // ================================
+    // RUTAS DE INFRACCIONES - NUEVO
+    // ================================
+
+    // Rutas de Infracciones para Inspectores
+    Route::middleware(['role:inspector,admin'])->prefix('infracciones')->name('infracciones.')->group(function () {
+
+        // Dashboard principal de infracciones
+        Route::get('/', [ActaController::class, 'index'])->name('index');
+
+        // Crear nueva acta (inspectores y admins)
+        Route::middleware(['role:inspector,admin'])->group(function () {
+            Route::get('/create', [ActaController::class, 'create'])->name('create');
+            Route::post('/create', [ActaController::class, 'store'])->name('store');
+        });
+
+        // Ver acta específica
+        Route::get('/{acta}', [ActaController::class, 'show'])->name('show');
+
+        // Mis actas (lista de actas del inspector)
+        Route::get('/mis-actas/listado', [ActaController::class, 'misActas'])->name('mis-actas');
+
+        // Búsqueda y utilidades AJAX
+        Route::post('/buscar-persona', [ActaController::class, 'buscarPersona'])->name('buscar-persona');
+        Route::post('/buscar-vehiculo', [ActaController::class, 'buscarVehiculo'])->name('buscar-vehiculo');
+        Route::get('/obtener-marcas', [ActaController::class, 'obtenerMarcas'])->name('obtener-marcas');
+        Route::post('/obtener-modelos', [ActaController::class, 'obtenerModelos'])->name('obtener-modelos');
+
+        // Impresión térmica (solo para inspectores que crearon el acta o admins)
+        Route::get('/{acta}/imprimir-termica', [ActaController::class, 'imprimirTermica'])
+            ->name('imprimir-termica');
     });
 
     // Rutas para admin y administrativos (CRUD completo)
@@ -107,6 +140,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/consumo-ciudad', [ReporteController::class, 'consumoCiudad'])->name('consumo-ciudad');
             Route::get('/introducciones/export', [ReporteController::class, 'exportarIntroducciones'])->name('introducciones.export');
         });
+
+        // ================================
+        // ADMINISTRACIÓN DE INFRACCIONES - NUEVO
+        // ================================
+
+        // Panel de administración de infracciones para admins
+        Route::prefix('admin/infracciones')->name('admin.infracciones.')->group(function () {
+            // Listar todas las actas (no solo las del inspector)
+            Route::get('/actas', [ActaController::class, 'adminIndex'])->name('actas.index');
+
+            // Reportes de infracciones
+            Route::get('/reportes', [ActaController::class, 'reportes'])->name('reportes');
+            Route::get('/estadisticas', [ActaController::class, 'estadisticas'])->name('estadisticas');
+
+            // Gestión de tipos de infracción
+            Route::get('/tipos-infraccion', [ActaController::class, 'tiposInfraccion'])->name('tipos.index');
+            Route::post('/tipos-infraccion', [ActaController::class, 'storeTipoInfraccion'])->name('tipos.store');
+            Route::put('/tipos-infraccion/{tipo}', [ActaController::class, 'updateTipoInfraccion'])->name('tipos.update');
+        });
     });
 
     // Rutas de solo lectura - Accesibles por todos los roles (incluyendo inspectores)
@@ -131,10 +183,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
             ->name('redespachos.descargar');
     });
 
-
-
     // Rutas solo para administradores
     Route::middleware(['role:admin'])->group(function () {
         Route::resource('usuarios', UserController::class);
     });
 });
+
+// ================================
+// RUTAS PÚBLICAS DE INFRACCIONES - NUEVO
+// ================================
+
+// Ruta pública para ver actas (sin autenticación, mediante token encriptado)
+Route::get('/acta/{token}', [ActaController::class, 'vistaPublica'])->name('actas.publica');
+
+// API pública para validar actas (opcional, para futuro)
+Route::get('/api/acta/{token}/validar', [ActaController::class, 'validarActaPublica'])->name('actas.validar');
